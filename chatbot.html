@@ -47,10 +47,18 @@
           </div>
         );
       }
+      /*function StudentCard ({name}){
+        return (
+          <>
+            {name === 'john' && <img src="user.png" width="50"/>}
+            {name === 'jane' && <img src="robot.png" width="50"/>}
+          </>
+        )
+      }*/
 
       function App(){
         return (
-                  <>
+        <>
           <ChatInput></ChatInput>
           <ChatMessage 
             message="hello chatbot" 
@@ -68,6 +76,8 @@
             message="Today is September 27" 
             sender="robot" 
           />
+          {/* <StudentCard name="john"></StudentCard>
+          <StudentCard name="jane"></StudentCard> */}
         </>
         )
       }
