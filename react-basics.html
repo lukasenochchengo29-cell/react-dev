@@ -8,20 +8,49 @@
     <script src="https://unpkg.com/supersimpledev/dayjs.min.js"></script>
     <script src="https://unpkg.com/supersimpledev/react.js"></script>
     <script src="https://unpkg.com/supersimpledev/react-dom.js"></script>
-
     <script src="https://unpkg.com/supersimpledev/babel.js"></script>
     <script type="text/babel">
+      // These two are just standalone JSX elements stored in variables (not used below, but valid on their own)
       const button = <button>Click Me</button>;
       const paragraph = <p>This is a paragraph.</p>;
+
+      // Plain JavaScript objects holding cost values
       const productCost = { productCost: 2 * 8 + 10 };
       const shippingCost = { shippingCost: 5 };
       const totalCost = {
         totalCost: productCost.productCost + shippingCost.shippingCost,
       };
+
+      // Grab the real DOM element where React will render everything
       const container = document.querySelector(".js-container");
       const root = ReactDOM.createRoot(container);
 
+      // Array of product objects — this is our data source
+      const products = [
+        {
+          title: "Cotton socks",
+          id: 1,
+        },
+        {
+          title: "Wool socks",
+          id: 2,
+        },
+        {
+          title: "Silk socks",
+          id: 3,
+        },
+      ];
+
       const renderClock = () => {
+        // IMPORTANT: build listItems as plain JavaScript, BEFORE the JSX return.
+        // This is JS logic (a .map() call), so it must live outside the JSX block below.
+        const listItems = products.map((product) => (
+          <li key={product.id}>{product.title}</li>
+        ));
+
+        // Now build the JSX to render — everything below is JSX, not JS statements.
+        // Notice: no "const" or "return" allowed INSIDE this JSX block itself —
+        // only tags, and { } wrapped values/expressions (like {listItems} below).
         const div = (
           <div>
             <button>Click Me</button>
@@ -38,11 +67,19 @@
             <p>Total Cost :$ {totalCost.totalCost}</p>
             <button>Place your order</button>
             <p>Current Time : {dayjs().format("HH:mm:ss")}</p>
+
+            {/* listItems is already a built array of <li> elements (JS), 
+                so we just insert it here using { } — wrapped in a <ul> for valid HTML structure */}
+            <ul>{listItems}</ul>
           </div>
         );
+
+        // Actually render the JSX we just built into the real DOM
         root.render(div);
       };
+
       renderClock();
+      // Re-run renderClock every 1000ms (1 second) so the clock keeps updating
       setInterval(renderClock, 1000);
     </script>
   </body>
