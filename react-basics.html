@@ -10,77 +10,69 @@
     <script src="https://unpkg.com/supersimpledev/react-dom.js"></script>
     <script src="https://unpkg.com/supersimpledev/babel.js"></script>
     <script type="text/babel">
-      // These two are just standalone JSX elements stored in variables (not used below, but valid on their own)
-      const button = <button>Click Me</button>;
-      const paragraph = <p>This is a paragraph.</p>;
-
-      // Plain JavaScript objects holding cost values
-      const productCost = { productCost: 2 * 8 + 10 };
-      const shippingCost = { shippingCost: 5 };
-      const totalCost = {
-        totalCost: productCost.productCost + shippingCost.shippingCost,
-      };
-
-      // Grab the real DOM element where React will render everything
-      const container = document.querySelector(".js-container");
-      const root = ReactDOM.createRoot(container);
-
-      // Array of product objects — this is our data source
       const products = [
-        {
-          title: "Cotton socks",
-          id: 1,
-        },
-        {
-          title: "Wool socks",
-          id: 2,
-        },
-        {
-          title: "Silk socks",
-          id: 3,
-        },
+        { title: "Cotton socks", id: 1 },
+        { title: "Wool socks", id: 2 },
+        { title: "Silk socks", id: 3 },
       ];
 
-      const renderClock = () => {
-        // IMPORTANT: build listItems as plain JavaScript, BEFORE the JSX return.
-        // This is JS logic (a .map() call), so it must live outside the JSX block below.
+      // This is now a real React COMPONENT (a function that returns JSX).
+      // Capitalized name ("App") is a React convention for components.
+      function App() {
+        // useState(0) creates a piece of state that starts at 0.
+        // cartCount -> current value
+        // setCartCount -> the ONLY correct way to update it
+        // Calling setCartCount() automatically tells React to re-render this component.
+        const [cartCount, setCartCount] = React.useState(0);
+
+        // A second piece of state, just to track the current time
+        const [currentTime, setCurrentTime] = React.useState(dayjs().format("HH:mm:ss"));
+
+        // useEffect lets us run "side effects" -- things outside of just
+        // returning JSX, like setting up a timer. The empty array [] at the
+        // end means "only run this once, when the component first mounts."
+        React.useEffect(() => {
+          const intervalId = setInterval(() => {
+            setCurrentTime(dayjs().format("HH:mm:ss"));
+          }, 1000);
+
+          // Cleanup: stop the interval if the component ever unmounts
+          return () => clearInterval(intervalId);
+        }, []);
+
+        // Handler: runs when an "Add to Cart" button is clicked
+        const handleAddToCart = (product) => {
+          setCartCount(cartCount + 1);
+          console.log(`Added ${product.title} to cart.`);
+        };
+
+        // Build the list of <li> items from the products array
         const listItems = products.map((product) => (
-          <li key={product.id}>{product.title}</li>
+          <li key={product.id}>
+            {product.title}
+            <button onClick={() => handleAddToCart(product)}>
+              Add to Cart
+            </button>
+          </li>
         ));
 
-        // Now build the JSX to render — everything below is JSX, not JS statements.
-        // Notice: no "const" or "return" allowed INSIDE this JSX block itself —
-        // only tags, and { } wrapped values/expressions (like {listItems} below).
-        const div = (
+        // The JSX this component renders
+        return (
           <div>
-            <button>Click Me</button>
-            <p>This is a paragraph. {3 + 5}</p>
-            <button>Good job!</button>
             <p>My name is Lukas Enock Chengo.</p>
-            <p>
-              Cotton socks <br /> <br />
-              Price : $10
-            </p>
-            <button>Add to Cart</button>
-            <p> Product Cost :$ {productCost.productCost}</p>
-            <p>Shipping Cost :$ {shippingCost.shippingCost}</p>
-            <p>Total Cost :$ {totalCost.totalCost}</p>
-            <button>Place your order</button>
-            <p>Current Time : {dayjs().format("HH:mm:ss")}</p>
 
-            {/* listItems is already a built array of <li> elements (JS), 
-                so we just insert it here using { } — wrapped in a <ul> for valid HTML structure */}
+            <p>Current Time : {currentTime}</p>
+
             <ul>{listItems}</ul>
+
+            <p><strong>Cart Total: {cartCount} item(s)</strong></p>
           </div>
         );
+      }
 
-        // Actually render the JSX we just built into the real DOM
-        root.render(div);
-      };
-
-      renderClock();
-      // Re-run renderClock every 1000ms (1 second) so the clock keeps updating
-      setInterval(renderClock, 1000);
+      const container = document.querySelector(".js-container");
+      const root = ReactDOM.createRoot(container);
+      root.render(<App />);
     </script>
   </body>
 </html>
