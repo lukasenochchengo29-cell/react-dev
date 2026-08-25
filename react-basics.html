@@ -2,13 +2,140 @@
 <html>
   <head>
     <title>React Basics</title>
+    <style>
+      /* Simple styling to make the page look cleaner without changing the app logic. */
+      :root {
+        --bg: #f4f7ff;
+        --card: #ffffff;
+        --primary: #4f46e5;
+        --primary-dark: #3730a3;
+        --text: #1f2937;
+        --muted: #6b7280;
+        --border: #e5e7eb;
+        --shadow: rgba(79, 70, 229, 0.12);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: linear-gradient(135deg, #eef2ff, #f8fafc);
+        font-family: Arial, sans-serif;
+        color: var(--text);
+      }
+
+      .js-container {
+        width: min(100%, 680px);
+        padding: 24px;
+      }
+
+      .app {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        box-shadow: 0 18px 32px var(--shadow);
+        padding: 24px;
+      }
+
+      .app-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 18px;
+      }
+
+      .intro {
+        margin: 0 0 6px;
+        color: var(--muted);
+        font-size: 0.95rem;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: 1.8rem;
+      }
+
+      .cart-badge {
+        background: #eef2ff;
+        color: var(--primary-dark);
+        border-radius: 999px;
+        padding: 10px 14px;
+        font-weight: 700;
+        white-space: nowrap;
+      }
+
+      .time-badge {
+        display: inline-block;
+        background: #ecfdf5;
+        color: #047857;
+        border: 1px solid #a7f3d0;
+        border-radius: 999px;
+        padding: 8px 12px;
+        font-weight: 700;
+        margin-bottom: 18px;
+      }
+
+      .product-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: grid;
+        gap: 12px;
+      }
+
+      .product-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        background: #f9fafb;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 14px 16px;
+      }
+
+      .product-name {
+        font-weight: 600;
+      }
+
+      .add-button {
+        border: none;
+        background: var(--primary);
+        color: white;
+        border-radius: 10px;
+        padding: 10px 14px;
+        font-size: 0.92rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: transform 0.15s ease, background 0.15s ease;
+      }
+
+      .add-button:hover {
+        background: var(--primary-dark);
+        transform: translateY(-1px);
+      }
+
+      .total {
+        margin: 18px 0 0;
+        font-size: 1.1rem;
+      }
+    </style>
   </head>
   <body>
     <div class="js-container"></div>
+
     <script src="https://unpkg.com/supersimpledev/dayjs.min.js"></script>
     <script src="https://unpkg.com/supersimpledev/react.js"></script>
     <script src="https://unpkg.com/supersimpledev/react-dom.js"></script>
     <script src="https://unpkg.com/supersimpledev/babel.js"></script>
+
     <script type="text/babel">
       const products = [
         { title: "Cotton socks", id: 1 },
@@ -16,56 +143,50 @@
         { title: "Silk socks", id: 3 },
       ];
 
-      // This is now a real React COMPONENT (a function that returns JSX).
-      // Capitalized name ("App") is a React convention for components.
       function App() {
-        // useState(0) creates a piece of state that starts at 0.
-        // cartCount -> current value
-        // setCartCount -> the ONLY correct way to update it
-        // Calling setCartCount() automatically tells React to re-render this component.
         const [cartCount, setCartCount] = React.useState(0);
-
-        // A second piece of state, just to track the current time
         const [currentTime, setCurrentTime] = React.useState(dayjs().format("HH:mm:ss"));
 
-        // useEffect lets us run "side effects" -- things outside of just
-        // returning JSX, like setting up a timer. The empty array [] at the
-        // end means "only run this once, when the component first mounts."
         React.useEffect(() => {
           const intervalId = setInterval(() => {
             setCurrentTime(dayjs().format("HH:mm:ss"));
           }, 1000);
 
-          // Cleanup: stop the interval if the component ever unmounts
           return () => clearInterval(intervalId);
         }, []);
 
-        // Handler: runs when an "Add to Cart" button is clicked
         const handleAddToCart = (product) => {
-          setCartCount(cartCount + 1);
+          setCartCount((prevCount) => prevCount + 1);
           console.log(`Added ${product.title} to cart.`);
         };
 
-        // Build the list of <li> items from the products array
         const listItems = products.map((product) => (
-          <li key={product.id}>
-            {product.title}
-            <button onClick={() => handleAddToCart(product)}>
+          <li key={product.id} className="product-item">
+            <span className="product-name">{product.title}</span>
+            <button className="add-button" onClick={() => handleAddToCart(product)}>
               Add to Cart
             </button>
           </li>
         ));
 
-        // The JSX this component renders
         return (
-          <div>
-            <p>My name is Lukas Enock Chengo.</p>
+          <div className="app">
+            <div className="app-header">
+              <div>
+                <p className="intro">My name is Lukas Enock Chengo.</p>
+                <h1>React Basics Demo</h1>
+              </div>
 
-            <p>Current Time : {currentTime}</p>
+              <div className="cart-badge">Cart: {cartCount}</div>
+            </div>
 
-            <ul>{listItems}</ul>
+            <p className="time-badge">Current Time: {currentTime}</p>
 
-            <p><strong>Cart Total: {cartCount} item(s)</strong></p>
+            <ul className="product-list">{listItems}</ul>
+
+            <p className="total">
+              <strong>Cart Total: {cartCount} item(s)</strong>
+            </p>
           </div>
         );
       }
