@@ -1,0 +1,89 @@
+<body>
+    <div class="js-container"></div>
+
+    <script src="https://unpkg.com/supersimpledev/dayjs.min.js"></script>
+    <script src="https://unpkg.com/supersimpledev/react.js"></script>
+    <script src="https://unpkg.com/supersimpledev/react-dom.js"></script>
+    <script src="https://unpkg.com/supersimpledev/babel.js"></script>
+
+    <script type="text/babel">
+      const products = [
+        { title: "Cotton socks", id: 1 },
+        { title: "Wool socks", id: 2 },
+        { title: "Silk socks", id: 3 },
+      ];
+      function Greetings(){
+        return(
+            <p>Hello welcome to my website</p>
+        )
+      }
+      function LoginForm(){
+        return (
+          <>
+            <div>
+              <input placeholder="Email"></input>
+            </div>
+            <div>
+              <input placeholder="Password" type="password"></input>
+            </div>
+            <button>Login</button>
+            <button>Signup</button>
+          </>
+        );
+      }
+      function App() {
+        const [cartCount, setCartCount] = React.useState(0);
+        const [currentTime, setCurrentTime] = React.useState(dayjs().format("HH:mm:ss"));
+
+        React.useEffect(() => {
+          const intervalId = setInterval(() => {
+            setCurrentTime(dayjs().format("HH:mm:ss"));
+          }, 1000);
+
+          return () => clearInterval(intervalId);
+        }, []);
+
+        const handleAddToCart = (product) => {
+          setCartCount((prevCount) => prevCount + 1);
+          console.log(`Added ${product.title} to cart.`);
+        };
+
+        const listItems = products.map((product) => (
+          <li key={product.id} className="product-item">
+            <span className="product-name">{product.title}</span>
+            <button className="add-button" onClick={() => handleAddToCart(product)}>
+              Add to Cart
+            </button>
+          </li>
+        ));
+
+        return (
+          <div className="app">
+            <div className="app-header">
+              <div>
+                <p className="intro">My name is Lukas Enock Chengo.</p>
+                <h1>React Basics Demo</h1>
+              </div>
+
+              <div className="cart-badge">Cart: {cartCount}</div>
+            </div>
+
+            <p className="time-badge">Current Time: {currentTime}</p>
+
+            <ul className="product-list">{listItems}</ul>
+
+            <p className="total">
+              <strong>Cart Total: {cartCount} item(s)</strong>
+            </p>
+            <Greetings />
+            <LoginForm />
+          </div>
+        );
+      }
+
+      const container = document.querySelector(".js-container");
+      const root = ReactDOM.createRoot(container);
+      root.render(<App />);
+    </script>
+  </body>
+</html>
